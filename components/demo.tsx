@@ -16,7 +16,7 @@ export function SplineSceneBasic() {
   }, [])
 
   return (
-    <Card className="w-full h-screen bg-black/[0.96] relative overflow-hidden border-0">
+    <Card className="w-full h-screen bg-black relative overflow-hidden border-0">
       <Spotlight
         className="-top-40 left-0 md:left-60 md:-top-20"
         fill="white"
@@ -26,17 +26,20 @@ export function SplineSceneBasic() {
         {/* Left content */}
         <div className="flex-1 p-8 relative z-10 flex flex-col justify-center items-center lg:items-start">
           <div
-            className={`bg-black/20 backdrop-blur-md border border-white/10 rounded-3xl p-10 max-w-2xl text-center lg:text-left space-y-8 transition-all duration-1000 ${isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"}`}
+            className={`bg-clip-padding p-10 max-w-2xl text-center lg:text-left space-y-8 transition-all duration-1000 ${isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"}`}
           >
             <div className="space-y-6">
-              <Badge variant="outline" className="text-blue-300 border-blue-300/50 mb-4">
+              <Badge
+                variant="outline"
+                className="bg-gradient-to-r from-blue-500/20 to-cyan-400/20 text-blue-300 border-blue-400/30 shadow-lg mb-4"
+              >
                 New & Improved AI Model
               </Badge>
-              <h1 className="text-5xl lg:text-7xl font-bold bg-gradient-to-r from-cyan-400 via-blue-500 to-indigo-600 bg-clip-text text-transparent leading-tight drop-shadow-lg">
+              <h1 className="text-5xl lg:text-7xl font-bold bg-gradient-to-r from-white via-blue-300 to-cyan-400 bg-clip-text text-transparent leading-tight drop-shadow-xl">
                 Arogya-Satya
               </h1>
-              <h2 className="text-2xl lg:text-3xl font-semibold text-blue-200">The AI Crisis Clarity Agent</h2>
-              <p className="text-xl text-gray-400 leading-relaxed">
+              <h2 className="text-2xl lg:text-3xl font-semibold text-blue-200/90">The AI Crisis Clarity Agent</h2>
+              <p className="text-xl text-gray-400/80 leading-relaxed">
                 Proactively combating misinformation with AI-powered inoculation. Building cognitive immunity before the
                 harm is done.
               </p>

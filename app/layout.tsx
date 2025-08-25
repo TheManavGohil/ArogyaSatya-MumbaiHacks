@@ -2,6 +2,7 @@ import type React from "react"
 import type { Metadata } from "next"
 import { DM_Sans } from "next/font/google"
 import "./globals.css"
+import { NavBarDemo } from "@/components/navbar"
 
 const dmSans = DM_Sans({
   subsets: ["latin"],
@@ -24,13 +25,16 @@ export default function RootLayout({
     <html lang="en" className="dark">
       <head>
         <style>{`
-html {
-  font-family: ${dmSans.style.fontFamily};
-  --font-sans: ${dmSans.variable};
-}
+          html {
+            font-family: ${dmSans.style.fontFamily};
+            --font-sans: ${dmSans.variable};
+          }
         `}</style>
       </head>
-      <body className={dmSans.className}>{children}</body>
+      <body className={dmSans.className}>
+        <NavBarDemo />
+        {children}
+      </body>
     </html>
   )
 }
