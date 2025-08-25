@@ -1,0 +1,74 @@
+'use client'
+
+import { SplineScene } from "@/components/splite";
+import { Card } from "@/components/card"
+import { Spotlight } from "@/components/spotlight"
+import { Button } from "@/components/ui/button"
+import { Badge } from "@/components/ui/badge"
+import { ArrowRight, Play } from "lucide-react"
+import { useEffect, useState } from "react"
+ 
+export function SplineSceneBasic() {
+  const [isVisible, setIsVisible] = useState(false)
+
+  useEffect(() => {
+    setIsVisible(true)
+  }, [])
+
+  return (
+    <Card className="w-full h-screen bg-black/[0.96] relative overflow-hidden border-0">
+      <Spotlight
+        className="-top-40 left-0 md:left-60 md:-top-20"
+        fill="white"
+      />
+      
+      <div className="flex h-full">
+        {/* Left content */}
+        <div className="flex-1 p-8 relative z-10 flex flex-col justify-center items-center lg:items-start">
+          <div
+            className={`bg-black/20 backdrop-blur-md border border-white/10 rounded-3xl p-10 max-w-2xl text-center lg:text-left space-y-8 transition-all duration-1000 ${isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"}`}
+          >
+            <div className="space-y-6">
+              <Badge variant="outline" className="text-blue-300 border-blue-300/50 mb-4">
+                New & Improved AI Model
+              </Badge>
+              <h1 className="text-5xl lg:text-7xl font-bold bg-gradient-to-r from-cyan-400 via-blue-500 to-indigo-600 bg-clip-text text-transparent leading-tight drop-shadow-lg">
+                Arogya-Satya
+              </h1>
+              <h2 className="text-2xl lg:text-3xl font-semibold text-blue-200">The AI Crisis Clarity Agent</h2>
+              <p className="text-xl text-gray-400 leading-relaxed">
+                Proactively combating misinformation with AI-powered inoculation. Building cognitive immunity before the
+                harm is done.
+              </p>
+            </div>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
+              <Button
+                size="lg"
+                className="bg-gradient-to-r from-blue-500 to-cyan-400 hover:from-blue-600 hover:to-cyan-500 text-white shadow-lg group transform hover:-translate-y-1 transition-all duration-300"
+              >
+                Get Started
+                <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
+              </Button>
+              <Button
+                size="lg"
+                variant="outline"
+                className="border-slate-700 text-slate-300 hover:bg-slate-800 hover:text-white group bg-transparent transition-colors"
+              >
+                <Play className="mr-2 h-5 w-5 group-hover:scale-110 transition-transform" />
+                Learn More
+              </Button>
+            </div>
+          </div>
+        </div>
+
+        {/* Right content */}
+        <div className="flex-1 relative">
+          <SplineScene 
+            scene="https://prod.spline.design/kZDDjO5HuC9GJUM2/scene.splinecode"
+            className="w-full h-full"
+          />
+        </div>
+      </div>
+    </Card>
+  )
+}
