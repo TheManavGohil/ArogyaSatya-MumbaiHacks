@@ -48,7 +48,7 @@ export function Features() {
   }, [])
 
   return (
-    <section className="py-20 px-4">
+    <section id="features" className="py-20 px-4">
       <div className="container mx-auto max-w-7xl">
         <div className="text-center mb-16">
           <h2 className="text-4xl lg:text-5xl font-bold mb-4 bg-gradient-to-r from-white to-blue-200 bg-clip-text text-transparent">

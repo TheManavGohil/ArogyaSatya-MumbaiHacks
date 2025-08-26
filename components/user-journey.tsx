@@ -54,7 +54,7 @@ export function UserJourney() {
   }, [])
 
   return (
-    <section className="py-20 px-4 bg-black">
+    <section id="user-journey" className="py-20 px-4 bg-black">
       <div className="container mx-auto max-w-6xl">
         <div className="text-center mb-16">
           <h2 className="text-4xl lg:text-5xl font-bold mb-4 bg-gradient-to-r from-white to-green-200 bg-clip-text text-transparent">

@@ -31,6 +31,43 @@ export function NavBar({ items, className }: NavBarProps) {
     return () => window.removeEventListener("resize", handleResize)
   }, [])
 
+  useEffect(() => {
+    const handleScroll = () => {
+      const sections = items.map(item => document.getElementById(item.url.substring(1))).filter(Boolean) as HTMLElement[]
+      const scrollPosition = window.scrollY + window.innerHeight / 2
+
+      for (const section of sections) {
+        if (scrollPosition >= section.offsetTop && scrollPosition < section.offsetTop + section.offsetHeight) {
+          const correspondingNavItem = items.find(item => `#${section.id}` === item.url)
+          if (correspondingNavItem) {
+            setActiveTab(correspondingNavItem.name)
+            break
+          }
+        }
+      }
+    }
+
+    window.addEventListener("scroll", handleScroll)
+    return () => window.removeEventListener("scroll", handleScroll)
+  }, [items])
+
+  const handleLinkClick = (e: React.MouseEvent<HTMLAnchorElement>, url: string) => {
+    if (url.startsWith("#")) {
+      e.preventDefault()
+      const targetId = url.substring(1)
+      const targetElement = document.getElementById(targetId)
+
+      if (targetElement) {
+        window.scrollTo({
+          top: targetElement.offsetTop,
+          behavior: "smooth",
+        })
+      } else if (url === "#") {
+        window.scrollTo({ top: 0, behavior: "smooth" })
+      }
+    }
+  }
+
   return (
     <div
       className={cn(
@@ -47,7 +84,10 @@ export function NavBar({ items, className }: NavBarProps) {
             <Link
               key={item.name}
               href={item.url}
-              onClick={() => setActiveTab(item.name)}
+              onClick={(e) => {
+                setActiveTab(item.name)
+                handleLinkClick(e, item.url)
+              }}
               className={cn(
                 "relative cursor-pointer text-sm font-semibold px-6 py-2 rounded-full transition-colors",
                 "text-foreground/80 hover:text-primary",
