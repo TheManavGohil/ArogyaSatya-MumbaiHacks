@@ -15,7 +15,7 @@ const journeySteps = [
     icon: AlertTriangle,
     title: "The Moment of Hesitation",
     description:
-      "Instead of forwarding the message, Priya remembers Arogya-Satya and sends the video to our WhatsApp verification service.",
+      "Instead of forwarding the message, Priya remembers TrueLens and sends the video to our WhatsApp verification service.",
   },
   {
     icon: Search,

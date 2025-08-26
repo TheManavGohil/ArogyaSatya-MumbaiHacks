@@ -29,18 +29,6 @@ const features = [
     description:
       "Generates prebunking blogs, infographics, and videos automatically at machine speed to outpace viral spread.",
   },
-  {
-    icon: Shield,
-    title: "Proactive Strategy vs. Reactive Process",
-    description:
-      "Detects misinformation early and inoculates before it spreads, building herd immunity in the population.",
-  },
-  {
-    icon: Brain,
-    title: "Goal of Empowerment, Not Just Correction",
-    description:
-      "Explains why something is manipulative, building critical thinking skills and long-term cognitive resilience.",
-  }
 ]
 
 export function Features() {

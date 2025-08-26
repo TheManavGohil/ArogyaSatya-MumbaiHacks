@@ -36,7 +36,7 @@ export function SplineSceneBasic() {
                 New & Improved AI Model
               </Badge>
               <h1 className="text-5xl lg:text-7xl font-bold bg-gradient-to-r from-white via-blue-300 to-cyan-400 bg-clip-text text-transparent leading-tight drop-shadow-xl">
-                Arogya-Satya
+                TrueLens
               </h1>
               <h2 className="text-2xl lg:text-3xl font-semibold text-blue-200/90">The AI Crisis Clarity Agent</h2>
               <p className="text-xl text-gray-400/80 leading-relaxed">

@@ -7,7 +7,7 @@ export function Footer() {
         <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8 mb-12">
           <div className="space-y-4">
             <h3 className="text-2xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
-              Arogya-Satya
+              TrueLens
             </h3>
             <p className="text-gray-300 leading-relaxed">
               AI-powered misinformation detection and cognitive inoculation for a more informed society.
@@ -94,7 +94,7 @@ export function Footer() {
         </div>
 
         <div className="flex flex-col md:flex-row justify-between items-center pt-8 border-t border-border/30">
-          <p className="text-gray-400 text-sm mb-4 md:mb-0">© 2024 Arogya-Satya. All rights reserved.</p>
+          <p className="text-gray-400 text-sm mb-4 md:mb-0">© 2025 TrueLens. All rights reserved.</p>
 
           <div className="flex space-x-4">
             {[

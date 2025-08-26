@@ -35,7 +35,7 @@ export function Hero() {
           >
             <div className="space-y-4">
               <h1 className="text-5xl lg:text-7xl font-bold bg-gradient-to-r from-white via-blue-200 to-green-200 bg-clip-text text-transparent leading-tight">
-                Arogya-Satya
+                TrueLens
               </h1>
               <h2 className="text-2xl lg:text-3xl font-semibold text-blue-300">The AI Crisis Clarity Agent</h2>
               <p className="text-xl text-gray-300 leading-relaxed max-w-lg">

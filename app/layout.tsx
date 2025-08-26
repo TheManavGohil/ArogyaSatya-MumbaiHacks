@@ -11,7 +11,7 @@ const dmSans = DM_Sans({
 })
 
 export const metadata: Metadata = {
-  title: "Arogya-Satya: AI Crisis Clarity Agent",
+  title: "TrueLens: AI Crisis Clarity Agent",
   description: "Proactively combating misinformation with AI-powered inoculation",
   generator: "v0.app",
 }
