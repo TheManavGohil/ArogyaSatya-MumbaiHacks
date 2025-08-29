@@ -6,20 +6,42 @@ import { Spotlight } from "@/components/spotlight"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { ArrowRight, Play } from "lucide-react"
-import { useEffect, useState } from "react"
+import { useEffect, useState, useRef } from "react"
  
 export function SplineSceneBasic() {
   const [isVisible, setIsVisible] = useState(false)
+  const [isHovered, setIsHovered] = useState(false);
+  const [mousePosition, setMousePosition] = useState({ x: -1000, y: -1000 });
+  const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     setIsVisible(true)
   }, [])
 
+  const handleMouseMove = (event: React.MouseEvent<HTMLDivElement>) => {
+    if (containerRef.current) {
+        const rect = containerRef.current.getBoundingClientRect();
+        setMousePosition({ x: event.clientX - rect.left, y: event.clientY - rect.top });
+    }
+  };
+
   return (
-    <Card className="w-full h-screen bg-black relative overflow-hidden border-0">
-      <Spotlight
-        className="-top-40 left-0 md:left-60 md:-top-20"
-        fill="white"
+    <Card 
+      ref={containerRef}
+      onMouseMove={handleMouseMove}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+      className="w-full h-screen bg-black relative overflow-hidden border-0">
+      <div
+        className="pointer-events-none absolute inset-0 z-0 transition-opacity duration-500"
+        style={{
+          backgroundImage: 'url(/newspaper.jpg)',
+          backgroundPosition: 'center',
+          backgroundSize: 'cover',
+          maskImage: `radial-gradient(circle 150px at ${mousePosition.x}px ${mousePosition.y}px, black, transparent)`,
+          WebkitMaskImage: `radial-gradient(circle 150px at ${mousePosition.x}px ${mousePosition.y}px, black, transparent)`,
+          opacity: isHovered ? 1 : 0,
+        }}
       />
       
       <div className="flex h-full">
