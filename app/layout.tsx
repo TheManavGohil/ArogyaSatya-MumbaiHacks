@@ -14,6 +14,15 @@ export const metadata: Metadata = {
   title: "TrueLens: AI Crisis Clarity Agent",
   description: "Proactively combating misinformation with AI-powered inoculation",
   generator: "v0.app",
+  manifest: "/manifest.json",
+  icons: {
+    icon: [
+      { url: "/icon0.svg", type: "image/svg+xml" },
+      { url: "/icon1.png", type: "image/png" },
+    ],
+    shortcut: "/favicon.ico",
+    apple: "/apple-icon.png",
+  },
 }
 
 export default function RootLayout({

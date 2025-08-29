@@ -31,14 +31,14 @@ export function Hero() {
         <div className="grid lg:grid-cols-2 gap-12 items-center">
           {/* Left side - Content */}
           <div
-            className={`space-y-8 transition-all duration-1000 ${isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"}`}
+            className={`space-y-10 transition-all duration-1000 ${isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"}`}
           >
             <div className="space-y-4">
-              <h1 className="text-5xl lg:text-7xl font-bold bg-gradient-to-r from-white via-blue-200 to-green-200 bg-clip-text text-transparent leading-tight">
+              <h1 className="text-7xl lg:text-8xl font-bold bg-gradient-to-r from-white via-blue-200 to-green-200 bg-clip-text text-transparent leading-tight">
                 TrueLens
               </h1>
-              <h2 className="text-2xl lg:text-3xl font-semibold text-blue-300">The AI Crisis Clarity Agent</h2>
-              <p className="text-xl text-gray-300 leading-relaxed max-w-lg">
+              <h2 className="text-4xl lg:text-4xl font-semibold text-blue-300">The AI Crisis Clarity Agent</h2>
+              <p className="text-2xl text-gray-300 leading-relaxed max-w-lg">
                 Proactively combating misinformation with AI-powered inoculation. Building cognitive immunity before the
                 harm is done.
               </p>
