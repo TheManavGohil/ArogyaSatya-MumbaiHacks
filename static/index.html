@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TrueLen | Healthcare Misinformation Detector</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #2563eb;
+            --primary-dark: #1d4ed8;
+            --secondary: #64748b;
+            --success: #10b981;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+            --background: #f8fafc;
+            --surface: #ffffff;
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --border: #e2e8f0;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--background);
+            color: var(--text-main);
+            margin: 0;
+            padding: 0;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: var(--text-main);
+            margin-bottom: 10px;
+            letter-spacing: -0.025em;
+        }
+
+        .subtitle {
+            color: var(--text-muted);
+            font-size: 1.1rem;
+        }
+
+        .card {
+            background: var(--surface);
+            border-radius: 12px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            padding: 24px;
+            margin-bottom: 24px;
+            border: 1px solid var(--border);
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: none;
+            font-size: 0.95rem;
+        }
+
+        .btn-primary {
+            background-color: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--primary-dark);
+            transform: translateY(-1px);
+        }
+
+        .btn-outline {
+            background-color: transparent;
+            border: 1px solid var(--border);
+            color: var(--text-main);
+        }
+
+        .btn-outline:hover {
+            background-color: var(--background);
+            border-color: var(--secondary);
+        }
+
+        textarea {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            font-family: inherit;
+            resize: vertical;
+            margin-bottom: 16px;
+            font-size: 1rem;
+            transition: border-color 0.2s;
+            box-sizing: border-box;
+        }
+
+        textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 9999px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .status-true {
+            background: #d1fae5;
+            color: #065f46;
+        }
+
+        .status-false {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .status-unverified {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .claim-card {
+            border-left: 4px solid transparent;
+            padding: 16px;
+            background: #f8fafc;
+            border-radius: 8px;
+            margin-bottom: 16px;
+        }
+
+        .claim-card.false {
+            border-left-color: var(--danger);
+        }
+
+        .claim-card.true {
+            border-left-color: var(--success);
+        }
+
+        .claim-card.unverified {
+            border-left-color: var(--warning);
+        }
+
+        .evidence-list {
+            margin-top: 12px;
+            padding-left: 0;
+            list-style: none;
+        }
+
+        .evidence-item {
+            font-size: 0.9rem;
+            margin-bottom: 8px;
+            padding: 8px;
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+        }
+
+        .evidence-link {
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .evidence-link:hover {
+            text-decoration: underline;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .trend-tag {
+            display: inline-block;
+            background: #eff6ff;
+            color: var(--primary);
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            margin-right: 8px;
+            margin-bottom: 8px;
+            border: 1px solid #dbeafe;
+        }
+
+        .loader {
+            border: 3px solid #f3f3f3;
+            border-radius: 50%;
+            border-top: 3px solid var(--primary);
+            width: 20px;
+            height: 20px;
+            animation: spin 1s linear infinite;
+            display: inline-block;
+            vertical-align: middle;
+            margin-right: 8px;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* Image Analysis Styles */
+        .image-analysis {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .image-card {
+            flex: 1;
+            min-width: 250px;
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 12px;
+        }
+
+        .image-card img {
+            max-width: 100%;
+            border-radius: 4px;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <header>
+            <h1>TrueLen</h1>
+            <p class="subtitle">AI-Powered Healthcare Misinformation Detector</p>
+        </header>
+
+        <div class="card">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                <h2 style="margin: 0;">Dashboard</h2>
+                <button class="btn btn-outline" onclick="triggerScan()">
+                    <span id="scanIcon">🔄</span> Trigger New Scan
+                </button>
+            </div>
+            <div id="scanStatus" style="font-size: 0.9rem; color: var(--text-muted);"></div>
+        </div>
+
+        <div class="card">
+            <h2>Analyze Content</h2>
+            <p style="color: var(--text-muted); margin-bottom: 15px;">Paste a news article, tweet, or YouTube URL.</p>
+            <textarea id="manualText" rows="4"
+                placeholder="e.g., 'Drinking hot water cures cancer...' or https://youtube.com/..."></textarea>
+            <button class="btn btn-primary" onclick="analyzeManual()">
+                <span id="analyzeBtnText">Analyze Veracity</span>
+            </button>
+        </div>
+
+        <div class="card">
+            <h2>Trending Narratives</h2>
+            <div id="trendsList">Loading trends...</div>
+        </div>
+
+        <div class="card">
+            <h2>Latest Articles</h2>
+            <div id="articlesList" class="grid">Loading...</div>
+        </div>
+
+        <div id="report" class="card" style="display: none; border-color: var(--primary);">
+            <h2 style="color: var(--primary);">Analysis Report</h2>
+            <div id="reportContent"></div>
+        </div>
+    </div>
+
+    <script>
+        const API_URL = "http://localhost:8000/api";
+
+        async function triggerScan() {
+            const btn = document.getElementById('scanIcon');
+            const status = document.getElementById('scanStatus');
+            btn.innerHTML = '<div class="loader"></div>';
+            status.innerText = "Scanning sources (BBC, CNN, Twitter)...";
+
+            try {
+                const res = await fetch(`${API_URL}/trigger-scan`, { method: 'POST' });
+                const data = await res.json();
+                status.innerText = `Scan Complete: ${data.status}`;
+                loadArticles();
+                loadTrends();
+            } catch (e) {
+                status.innerText = "Error: " + e;
+            } finally {
+                btn.innerHTML = '🔄';
+            }
+        }
+
+        async function loadArticles() {
+            try {
+                const res = await fetch(`${API_URL}/articles`);
+                const articles = await res.json();
+                const container = document.getElementById('articlesList');
+
+                if (articles.length === 0) {
+                    container.innerHTML = "<p>No articles found.</p>";
+                    return;
+                }
+
+                container.innerHTML = articles.map(art => `
+                    <div style="border: 1px solid var(--border); padding: 16px; border-radius: 8px;">
+                        <h3 style="margin-top: 0; font-size: 1.1rem;">${art.title}</h3>
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 10px;">
+                            <span style="font-size: 0.85rem; color: var(--text-muted);">${art.source}</span>
+                            <button class="btn btn-outline" style="padding: 5px 10px; font-size: 0.8rem;" onclick="analyzeArticle(${art.id})">Analyze</button>
+                        </div>
+                    </div>
+                `).join('');
+            } catch (e) {
+                document.getElementById('articlesList').innerText = "Failed to load articles.";
+            }
+        }
+
+        async function loadTrends() {
+            try {
+                const res = await fetch(`${API_URL}/trends`);
+                const trends = await res.json();
+                const container = document.getElementById('trendsList');
+
+                if (trends.length === 0) {
+                    container.innerHTML = "<p style='color: var(--text-muted);'>No significant trends detected yet.</p>";
+                    return;
+                }
+
+                container.innerHTML = trends.map(t => `
+                    <div class="trend-tag">
+                        <strong>${t.topic}</strong> (${t.count})
+                    </div>
+                `).join('');
+            } catch (e) {
+                document.getElementById('trendsList').innerText = "Failed to load trends.";
+            }
+        }
+
+        async function analyzeManual() {
+            const text = document.getElementById('manualText').value;
+            if (!text) return;
+            runAnalysis(`${API_URL}/analyze-text`, { text: text });
+        }
+
+        async function analyzeArticle(id) {
+            runAnalysis(`${API_URL}/analyze/${id}`, {});
+        }
+
+        async function runAnalysis(endpoint, body) {
+            const reportDiv = document.getElementById('report');
+            const contentDiv = document.getElementById('reportContent');
+
+            reportDiv.style.display = 'block';
+            contentDiv.innerHTML = '<div style="text-align: center; padding: 40px;"><div class="loader"></div><p>Analyzing content with AI Agents...</p><p style="font-size: 0.9rem; color: var(--text-muted);">Extracting claims • Searching evidence • Verifying facts</p></div>';
+            reportDiv.scrollIntoView({ behavior: 'smooth' });
+
+            try {
+                const res = await fetch(endpoint, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(body)
+                });
+                const data = await res.json();
+                renderReport(data);
+            } catch (e) {
+                contentDiv.innerHTML = `<div style="color: var(--danger);">Error: ${e.message}</div>`;
+            }
+        }
+
+        function renderReport(data) {
+            let html = `<div style="background: #f1f5f9; padding: 16px; border-radius: 8px; margin-bottom: 24px;">
+                <h3 style="margin-top: 0;">Executive Summary</h3>
+                <p style="margin-bottom: 0;">${data.report}</p>
+            </div>`;
+
+            // Image Analysis
+            if (data.image_analysis && data.image_analysis.length > 0) {
+                html += `<h3>Visual Analysis</h3><div class="image-analysis">`;
+                data.image_analysis.forEach(img => {
+                    html += `<div class="image-card">
+                        <img src="${img.url}" alt="Analyzed Image">
+                        <p><strong>Description:</strong> ${img.analysis.description}</p>
+                        ${img.analysis.claims && img.analysis.claims.length > 0 ?
+                            `<div style="margin-top: 8px;"><strong>Visual Claims:</strong><ul style="margin: 5px 0; padding-left: 20px;">${img.analysis.claims.map(c => `<li>${c}</li>`).join('')}</ul></div>` : ''}
+                    </div>`;
+                });
+                html += `</div>`;
+            }
+
+            // Verification Results
+            html += `<h3>Claim Verification</h3>`;
+            data.verification_results.forEach(v => {
+                const statusClass = v.status.toLowerCase();
+
+                // Render Evidence Links
+                let evidenceHtml = '';
+                if (v.evidence && Array.isArray(v.evidence) && v.evidence.length > 0) {
+                    evidenceHtml = `<div style="margin-top: 12px;">
+                        <strong style="font-size: 0.9rem;">Supporting Evidence:</strong>
+                        <ul class="evidence-list">
+                            ${v.evidence.map(e => `
+                                <li class="evidence-item">
+                                    <a href="${e.url}" target="_blank" class="evidence-link">${e.title}</a>
+                                    <div style="color: var(--text-muted); font-size: 0.85rem; margin-top: 4px;">${e.snippet}</div>
+                                </li>
+                            `).join('')}
+                        </ul>
+                    </div>`;
+                } else {
+                    evidenceHtml = `<div style="margin-top: 10px; font-style: italic; color: var(--text-muted);">No direct evidence found.</div>`;
+                }
+
+                html += `<div class="claim-card ${statusClass}">
+                    <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 8px;">
+                        <strong style="font-size: 1.1rem;">"${v.claim}"</strong>
+                        <span class="status-badge status-${statusClass}">${v.status}</span>
+                    </div>
+                    <p>${v.explanation}</p>
+                    ${v.correction ? `<p style="color: var(--success);"><strong>Correction:</strong> ${v.correction}</p>` : ''}
+                    ${evidenceHtml}
+                </div>`;
+            });
+
+            document.getElementById('reportContent').innerHTML = html;
+        }
+
+        // Initial Load
+        loadArticles();
+        loadTrends();
+    </script>
+</body>
+
+</html>
