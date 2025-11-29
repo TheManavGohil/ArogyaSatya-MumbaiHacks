@@ -9,13 +9,13 @@ const journeySteps = [
     icon: MessageSquare,
     title: "The Encounter with Misinformation",
     description:
-      "Priya receives a forwarded message in her family WhatsApp group about a 'miracle cure' video that looks professional and urgent.",
+      "User receives a forwarded message in her family WhatsApp group about a 'miracle cure' video that looks professional and urgent.",
   },
   {
     icon: AlertTriangle,
     title: "The Moment of Hesitation",
     description:
-      "Instead of forwarding the message, Priya remembers TrueLens and sends the video to our WhatsApp verification service.",
+      "Instead of forwarding the message, User remembers TrueLens and sends the video to our WhatsApp verification service.",
   },
   {
     icon: Search,
@@ -27,7 +27,7 @@ const journeySteps = [
     icon: CheckCircle,
     title: "Immediate, Empowering Response",
     description:
-      "Priya receives an educational response explaining the impersonation tactic and directing her to official health sources.",
+      "User receives an educational response explaining the impersonation tactic and directing her to official health sources.",
   },
   {
     icon: FileText,
@@ -58,7 +58,7 @@ export function UserJourney() {
       <div className="container mx-auto max-w-6xl">
         <div className="text-center mb-16">
           <h2 className="text-4xl lg:text-5xl font-bold mb-4 bg-gradient-to-r from-white to-green-200 bg-clip-text text-transparent">
-            How It Works: Priya's Journey
+            How It Works: User's Journey
           </h2>
           <p className="text-xl text-gray-300 max-w-2xl mx-auto">
             Follow a real user's experience with our AI-powered misinformation detection system
