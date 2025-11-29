@@ -1,66 +1,75 @@
 import json
 from typing import List, Dict, TypedDict
 from langgraph.graph import StateGraph, END
-from langchain_groq import ChatGroq
-from langchain_core.messages import SystemMessage
 from app.agents.prompts import EXPLAINER_PROMPT
-from app.core.config import settings
+from app.core.llm_cache import cached_llm_invoke
 
 # Import Agents
 from app.agents.claim_extraction import claim_extraction_node
 from app.agents.canonicalization import canonicalization_node
 from app.agents.evidence_retrieval import evidence_retrieval_node
 from app.agents.verification import verification_node
-from app.agents.vlm_agent import vlm_node
 from app.agents.video_processor import video_processor_node
 from app.agents.pubmed_agent import pubmed_node
 from app.agents.safety_agent import safety_monitor_node
 
-# Initialize LLM (for Explainer)
-llm = ChatGroq(
-    temperature=0, 
-    model_name="openai/gpt-oss-120b", 
-    api_key=settings.GROQ_API_KEY
-)
 
 class AgentState(TypedDict):
     article_id: int
     text: str
-    images: List[str] # List of image URLs
-    claims: List[str] # From Extraction
-    evidence: Dict[str, List[Dict]] # From Retrieval
-    verification_results: List[Dict] # From Verification
-    image_analysis: List[Dict] # From VLM
-    final_report: str # From Explainer
-    safety_status: Dict # From Safety Monitor
+    images: List[str]  # List of image URLs
+    claims: List[str]  # From Extraction
+    evidence: Dict[str, List[Dict]]  # From Retrieval
+    verification_results: List[Dict]  # From Verification
+    image_analysis: List[Dict]  # From VLM
+    final_report: str  # From Explainer
+    safety_status: Dict  # From Safety Monitor
+
+
+def vlm_node(state):
+    """Lazy-loading VLM node - only loads model when images are present."""
+    print("---VLM NODE---")
+    images = state.get("images", [])
+
+    if not images:
+        print("No images to analyze - skipping VLM load")
+        return {"image_analysis": []}
+
+    # Only import and use VLM when needed
+    try:
+        from app.agents.vlm_agent import vlm_node as actual_vlm_node
+        return actual_vlm_node(state)
+    except Exception as e:
+        print(f"VLM analysis skipped: {e}")
+        return {"image_analysis": []}
+
 
 def explainer_node(state: AgentState):
     print("---EXPLAINER NODE---")
-    
+
     # Check Safety First
     safety = state.get("safety_status", {})
     if safety and not safety.get("is_safe", True):
         return {"final_report": f"⚠️ **SAFETY WARNING**: Analysis halted.\n\n{safety.get('warning', 'Content flagged as unsafe.')}\n\nReason: {safety.get('reason')}"}
 
-    results = state["verification_results"]
+    results = state.get("verification_results", [])
     image_results = state.get("image_analysis", [])
-    
+
     # Filter for false or unverified claims to address
     to_address = [r for r in results if r.get("status") != "True"]
-    
-    # Add image findings to report context
-    image_context = ""
-    if image_results:
-        image_context = "\n\nImage Analysis:\n" + json.dumps(image_results)
-    
+
     if not to_address and not image_results:
-        return {"final_report": "No misinformation detected."}
-        
-    response = llm.invoke([
-        SystemMessage(content=EXPLAINER_PROMPT.format(verification_results=json.dumps(to_address) + image_context))
-    ])
-    
-    return {"final_report": response.content}
+        return {"final_report": "✅ No misinformation detected."}
+
+    # Build concise context
+    context = json.dumps(to_address[:5], indent=2)  # Limit for speed
+    if image_results:
+        context += f"\n\nImage findings: {json.dumps(image_results[:2])}"
+
+    prompt = EXPLAINER_PROMPT.format(verification_results=context)
+    response_content = cached_llm_invoke(prompt, use_cache=False)  # Don't cache final reports
+
+    return {"final_report": response_content}
 
 # Build Graph
 workflow = StateGraph(AgentState)
@@ -97,10 +106,28 @@ workflow.add_conditional_edges(
     }
 )
 
-workflow.add_edge("claim_extraction", "vlm_analysis")
+
+# Conditional edge after claim extraction - skip if no claims found
+def check_claims(state):
+    claims = state.get("claims", [])
+    if not claims:
+        print("No claims found - skipping to explainer")
+        return "explainer"
+    return "vlm_analysis"
+
+
+workflow.add_conditional_edges(
+    "claim_extraction",
+    check_claims,
+    {
+        "explainer": "explainer",
+        "vlm_analysis": "vlm_analysis"
+    }
+)
+
 workflow.add_edge("vlm_analysis", "canonicalization")
 workflow.add_edge("canonicalization", "evidence_retrieval")
-workflow.add_edge("evidence_retrieval", "pubmed_search") # Chain PubMed after general retrieval
+workflow.add_edge("evidence_retrieval", "pubmed_search")
 workflow.add_edge("pubmed_search", "verification")
 workflow.add_edge("verification", "explainer")
 workflow.add_edge("explainer", END)

@@ -1,42 +1,34 @@
 import json
-from langchain_core.messages import SystemMessage
-from langchain_groq import ChatGroq
-from app.core.config import settings
-
-# Initialize LLM
-llm = ChatGroq(
-    temperature=0, 
-    model_name="openai/gpt-oss-120b", 
-    api_key=settings.GROQ_API_KEY
-)
+from app.core.llm_cache import cached_llm_invoke
 
 CLAIM_EXTRACTION_PROMPT = """
-You are an expert fact-checker. Your task is to extract atomic, verifiable claims from the provided text.
-Focus on healthcare and medical assertions.
-Ignore opinions, questions, or vague statements.
+You are an expert fact-checker. Extract up to 5 key verifiable healthcare claims from this text.
+Focus on medical assertions. Ignore opinions or vague statements. Be concise.
 
-Input Text:
+Text:
 {text}
 
-Output format:
-Return a JSON list of strings, where each string is a standalone claim.
-Example: ["Vaccine X causes infertility", "Vitamin C cures COVID-19"]
+Return ONLY a JSON list of claim strings. Example: ["Claim 1", "Claim 2"]
 """
 
 def claim_extraction_node(state):
     print("---CLAIM EXTRACTION NODE---")
     text = state["text"]
-    
-    response = llm.invoke([
-        SystemMessage(content=CLAIM_EXTRACTION_PROMPT.format(text=text))
-    ])
-    
+
+    # Limit text length to improve speed
+    truncated_text = text[:3000] if len(text) > 3000 else text
+
+    prompt = CLAIM_EXTRACTION_PROMPT.format(text=truncated_text)
+    response_content = cached_llm_invoke(prompt)
+
     try:
-        claims = json.loads(response.content)
+        claims = json.loads(response_content)
         if not isinstance(claims, list):
             claims = []
+        # Limit to 5 claims for performance
+        claims = claims[:5]
     except:
         claims = []
-    
-    print(f"Extracted claims: {claims}")
+
+    print(f"Extracted {len(claims)} claims")
     return {"claims": claims}

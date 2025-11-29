@@ -1,16 +1,19 @@
 import httpx
 import xmltodict
+from concurrent.futures import ThreadPoolExecutor, as_completed
 
 PUBMED_API_BASE = "https://eutils.ncbi.nlm.nih.gov/entrez/eutils"
 
 def search_pubmed(query: str, max_results: int = 3):
-    """Searches PubMed for relevant articles (Synchronous)."""
-    with httpx.Client() as client:
-        # 1. ESearch to get IDs
+    """Searches PubMed for relevant English articles (Synchronous)."""
+    with httpx.Client(timeout=8.0) as client:  # Reduced timeout
+        # 1. ESearch to get IDs - filter for English articles
         search_url = f"{PUBMED_API_BASE}/esearch.fcgi"
+        # Add language filter to query for English articles only
+        filtered_query = f"({query}) AND (English[Language])"
         params = {
             "db": "pubmed",
-            "term": query,
+            "term": filtered_query,
             "retmode": "json",
             "retmax": max_results,
             "sort": "relevance"
@@ -76,22 +79,39 @@ def search_pubmed(query: str, max_results: int = 3):
             print(f"PubMed search failed: {e}")
             return []
 
+def _search_pubmed_for_claim(claim: str) -> tuple:
+    """Search PubMed for a single claim - for parallel execution."""
+    if not claim or len(claim.strip()) < 5:
+        return claim, []
+    articles = search_pubmed(claim)
+    return claim, articles
+
+
 def pubmed_node(state):
-    print("---PUBMED AGENT (Sync)---")
+    print("---PUBMED AGENT (Parallel)---")
     claims = state["claims"]
     evidence_map = state.get("evidence", {})
-    
-    for claim in claims:
-        if not claim or len(claim.strip()) < 5:
-            continue
-            
-        print(f"Searching PubMed for: {claim}")
-        articles = search_pubmed(claim)
-        
-        if articles:
-            current_evidence = evidence_map.get(claim, [])
-            # Prepend PubMed results to prioritize them
-            evidence_map[claim] = articles + current_evidence
-            print(f"Found {len(articles)} PubMed articles for: {claim}")
-            
+
+    valid_claims = [c for c in claims if c and len(c.strip()) >= 5]
+
+    if not valid_claims:
+        return {"evidence": evidence_map}
+
+    # Parallel PubMed searches
+    max_workers = min(len(valid_claims), 3)  # Limit concurrent PubMed requests
+
+    with ThreadPoolExecutor(max_workers=max_workers) as executor:
+        futures = {executor.submit(_search_pubmed_for_claim, claim): claim for claim in valid_claims}
+
+        for future in as_completed(futures):
+            try:
+                claim, articles = future.result(timeout=10)
+                if articles:
+                    current_evidence = evidence_map.get(claim, [])
+                    # Prepend PubMed results to prioritize them
+                    evidence_map[claim] = articles + current_evidence
+                    print(f"Found {len(articles)} PubMed articles for: '{claim[:40]}...'")
+            except Exception as e:
+                print(f"PubMed search failed: {e}")
+
     return {"evidence": evidence_map}

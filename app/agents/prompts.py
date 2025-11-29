@@ -12,15 +12,15 @@ Example format: ["Vaccines cause magnetism", "Drinking bleach cures COVID"]
 """
 
 VERIFIER_PROMPT = """
-You are a professional fact-checker. Your task is to verify the following claim using the provided evidence.
+Verify this healthcare claim using the evidence provided.
+
 Claim: {claim}
 
 Evidence:
 {evidence}
 
-Determine if the claim is True, False, or Unverified based on the evidence.
-Provide a brief explanation and cite the evidence if possible.
-Return the output as a JSON object with keys: "status" (True/False/Unverified), "explanation", "correction" (if False).
+Return ONLY valid JSON (no other text):
+{{"status": "True" or "False" or "Unverified", "explanation": "brief explanation citing evidence", "correction": "correct info if False, else empty string"}}
 """
 
 EXPLAINER_PROMPT = """
